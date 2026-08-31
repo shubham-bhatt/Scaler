@@ -7,7 +7,7 @@ topics: [Arrays, Sorting, Binary Search, Prefix Sum]
 difficulty: medium
 frequency: high
 created: 2026-08-20
-updated: 2026-08-20
+updated: 2026-08-31
 reviewed: 2026-08-09
 source: lecture notes
 related: [two-pointers-sliding-window, dynamic-programming, bit-and-math]
@@ -170,6 +170,12 @@ Merge upward:
    overcounts inversions (equal elements counted as inversions).
 3. **Integer overflow for inversion count** — max is N*(N-1)/2. Use `long`.
 4. **Empty / single-element array** — base case must handle both.
+5. **Unsafe comparator subtraction** — `(a, b) -> a - b` can silently overflow
+   or underflow for large or negative values (e.g. near `Integer.MIN_VALUE`),
+   producing an inconsistent comparator and a corrupted sort. Prefer
+   `Integer::compare` or `(a, b) -> Integer.compare(a, b)` — safe for the full
+   `int` range. (Subtraction is sometimes fine under known small constraints, but
+   the safe comparator is the interview-quality default.)
 
 #### Interview Angle
 

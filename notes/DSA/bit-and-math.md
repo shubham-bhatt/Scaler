@@ -7,7 +7,7 @@ topics: [Bit Manipulation, Number Theory, Math Tricks]
 difficulty: medium
 frequency: high
 created: 2026-08-20
-updated: 2026-08-20
+updated: 2026-08-31
 reviewed: 2026-08-09
 source: lecture notes
 related: [arrays-searching-sorting, recursion-and-backtracking]
@@ -158,8 +158,83 @@ Sieve up to 30 → 2, 3, 5, 7, 11, 13, 17, 19, 23, 29.
 
 ## Math Tricks
 
-_Not yet written._ (Modular arithmetic & fast exponentiation, combinatorics
-nCr with modular inverse, fast power, overflow-safe multiplication, base conversion.)
+> Not every "convert number to X" problem is standard base conversion — some
+> numeral systems (like spreadsheet column names) have no zero digit, which
+> changes the extraction formula. _(Modular arithmetic & fast exponentiation,
+> nCr with modular inverse, are the next layer to add here.)_
+
+### Core Concept
+
+Standard base-B conversion extracts digits via `n % B` then `n /= B`, with
+digits ranging `0..B-1`. **Bijective base-26** (Excel column titles: A=1 … Z=26,
+then AA=27) has no zero digit — digits range `1..26`. Naively applying `n % 26`
+breaks exactly at multiples of 26 (it would emit a spurious digit-0). Fix: shift
+by 1 before extracting, i.e. work with `(n-1) % 26` and `(n-1) / 26`.
+
+### Details / Walkthrough — Excel Column Title
+
+```java
+String excelColumn(int n) {
+    StringBuilder sb = new StringBuilder();
+    while (n > 0) {
+        int digit = (n - 1) % 26;         // 0..25, representing A..Z
+        sb.append((char) ('A' + digit));  // arithmetic directly gives the letter
+        n = (n - 1) / 26;
+    }
+    return sb.reverse().toString();
+}
+```
+- `%26` extracts the rightmost digit; `/26` removes it — digits come out
+  **right to left**, so build into a `StringBuilder` and `.reverse()` once at
+  the end (prepending to a `String` per digit would be O(N) per step).
+- The `-1` shift is exactly what makes `26` map to `'Z'` (digit 25) instead of
+  wrapping to a phantom zero digit, and what makes `27` correctly roll over to `"AA"`.
+- No need to pre-allocate an `ArrayList<Character>` of `A..Z` — `(char)('A' + digit)`
+  computes the letter directly. General lesson: before reaching for a
+  HashMap/ArrayList/Set, check whether arithmetic or direct indexing already
+  gives the answer.
+
+### Examples
+
+| n | Trace | Result |
+|---|---|---|
+| 1 | `(0)%26=0`→'A', `(0)/26=0` stop | A |
+| 26 | `(25)%26=25`→'Z', `(25)/26=0` stop | Z |
+| 27 | `(26)%26=0`→'A', `(26)/26=1` → `(0)%26=0`→'A', stop | AA |
+| 52 | `(51)%26=25`→'Z', `(51)/26=1` → `(0)%26=0`→'A', stop | AZ |
+| 53 | `(52)%26=0`→'A', `(52)/26=2` → `(1)%26=1`→'B', stop | BA |
+| 702 | (same pattern, two full 26-cycles) | ZZ |
+| 703 | (rolls into a third digit) | AAA |
+
+### Common Mistakes / Edge Cases
+
+1. **Forgetting the `-1` shift** — plain `n % 26` / `n / 26` treats this as a
+   normal base-26 system with a zero digit, which produces the wrong letter
+   exactly at multiples of 26.
+2. **Prepending to a `String` in the loop** (`ans = c + ans`) — O(N) per
+   prepend, O(N²) total; append to a `StringBuilder` and `.reverse()` once instead.
+3. **Allocating an unnecessary lookup structure** — `(char)('A' + digit)`
+   replaces any `ArrayList<Character>`/array of letters you might otherwise build.
+4. **Not hand-tracing the boundary values** — `n=1`, `n=26`, `n=27` are the
+   three points where the `-1` shift actually changes behavior; trace them by hand.
+
+### Interview Angle
+
+**How interviewers test this:**
+- Direct: "Excel Column Title" (LC 168) → bijective base-26 encode (number → string).
+- Reverse direction: "Excel Column Number" (LC 171) → standard base-26 decode
+  (string → number) — no `-1` shift needed there, since you're summing
+  `value * 26^position`, not extracting digits from a count.
+- Follow-up: "What if digits went 0-25 instead of 1-26?" — tests whether you
+  understand *why* the shift exists, not just the memorized formula.
+
+**Pattern Recognition — Keywords → Approach**
+
+| Constraint / Keyword in Problem | Think of This Pattern |
+|---|---|
+| "spreadsheet column title/number" | Bijective base-26 (shift by 1 before `%`/`/`) |
+| "convert number to base B" (standard) | Plain `% B`, `/ B`, digits `0..B-1` |
+| "build a string digit by digit" | `StringBuilder` + `.reverse()`, never `String +=` in a loop |
 
 ---
 

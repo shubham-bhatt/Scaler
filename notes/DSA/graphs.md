@@ -10,7 +10,7 @@ created: 2026-08-20
 updated: 2026-08-20
 reviewed: 2026-08-09
 source: lecture notes
-related: [linkedlist-stack-queue, heaps-and-greedy, trees-and-bst]
+related: [linkedlist-stack-queue, heaps-and-greedy, trees-and-bst, recursion-and-backtracking]
 status: partial
 ---
 
@@ -202,6 +202,7 @@ course-schedule / build-order / dependency problems; detects cycles in directed 
 - [Linked List, Stack & Queue](linkedlist-stack-queue.md) — BFS uses a Queue, DFS uses a Stack/recursion
 - [Heaps & Greedy](heaps-and-greedy.md) — Prim's & Dijkstra use a PriorityQueue; MST is a greedy algorithm
 - [Trees & BST](trees-and-bst.md) — a tree is an acyclic connected graph; traversals overlap
+- [Recursion & Backtracking](recursion-and-backtracking.md) — backtracking is DFS with pruning; grid-path problems (move Down/Right) are a special case of graph/grid traversal
 
 ## Cheat Sheet
 

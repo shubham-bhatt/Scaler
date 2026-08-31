@@ -1,190 +1,150 @@
 ---
 name: notes
-description: Turn rough lecture notes (pasted text, PDFs, or text/docx files) into a detailed, well-structured note plus a companion cheat sheet for the DSA/LLD/HLD study vault under notes/. Cross-links related topics and keeps notes/INDEX.md up to date. Use whenever the user pastes rough notes from a lecture, shares a teacher's PDF/text file, or asks to "make notes", "add to my notes", "process this lecture", or "update the cheat sheet".
+description: Turn rough lecture notes (pasted text, PDFs, text/docx files, or hand-drawn/whiteboard images) into detailed, well-structured notes plus a matching cheat sheet section for the DSA/LLD/HLD/SQL study vault under notes/. Cross-links related topics and keeps notes/INDEX.md up to date. Use whenever the user pastes rough notes from a lecture, shares a teacher's PDF/text file, or asks to "make notes", "add to my notes", "process this lecture", or "update the cheat sheet".
 ---
 
 # Notes Writer
 
-Converts raw input (typed rough notes, pasted teacher material, or a PDF/text/docx
-file path) into two polished Markdown files inside the study vault at `notes/`,
-then wires the new topic into the vault's cross-link graph and index.
+Converts raw input (typed rough notes, pasted teacher material, a PDF/text/docx
+file path, or hand-drawn/whiteboard images) into structured entries in the
+study vault at `notes/`, then wires the new or extended topic into the vault's
+cross-link graph and index.
 
-The vault covers three subjects: **DSA**, **LLD**, **HLD** — for interview prep
-(coding + design rounds). Everything is plain Markdown so it renders correctly
-on GitHub or any plain viewer (no Obsidian-only syntax).
+## Vault layout — read `notes/INDEX.md`, don't assume structure here
 
-## Vault layout
+**`notes/INDEX.md` is the single source of truth for the vault's structure.**
+It documents the subjects (buckets), the Bucket → Subbucket → Topic model, the
+templates in `_templates/`, each subject's consolidated `cheatsheet.md`, and —
+in each subject's **Topic Details** block — enough per-topic keyword detail to
+route new content without opening every candidate file first.
 
-```
-notes/
-  INDEX.md                          # master index, one section per subject
-  DSA/
-    <topic-slug>.md                 # detailed note
-    cheatsheets/<topic-slug>-cheatsheet.md
-    sources/                        # original PDFs/files copied here for reference
-  LLD/  (same layout)
-  HLD/  (same layout)
-```
+**Read `INDEX.md` in full at the start of every run**, before touching
+anything else. Do not hardcode the directory layout, subject list, or
+file-naming convention here — if this skill's understanding of the vault ever
+disagrees with `INDEX.md`, `INDEX.md` wins; fix drift by updating `INDEX.md`,
+not by re-adding structure to this file.
 
 ## Workflow
 
 1. **Get the input.**
-   - If the user pasted rough notes directly in chat, use that text.
-   - If they gave a file path (PDF, .txt, .docx), read it with the Read tool
-     (Read supports PDF directly) or the relevant Office skill for .docx.
-   - If neither is clear, ask what to process.
+   - Pasted rough notes → use that text directly.
+   - A file path (PDF, .txt, .docx) → read it with the Read tool (Read
+     supports PDF directly) or the relevant Office skill for `.docx`.
+   - Referenced images (screenshots, whiteboard photos) → open them with Read
+     (it's multimodal). Rough notes often leave a doubt or a step unresolved
+     with "see attached image" — the image is frequently where the actual
+     missing content is; don't skip it.
+   - If none of the above is clear, ask what to process.
 
-2. **Classify subject + topic.**
-   - Decide DSA / LLD / HLD from content. If genuinely ambiguous, ask.
-   - Pick a short kebab-case topic slug (e.g. `sliding-window`,
-     `observer-pattern`, `rate-limiter-design`).
-   - Glob `notes/<Subject>/*.md` first. If a file for this topic (or a clear
-     near-duplicate) already exists, **update/merge into it** rather than
-     creating a second file for the same concept — append new material under
-     the right heading, don't duplicate sections.
+2. **Read `notes/INDEX.md`, then classify.**
+   - For each distinct piece of content in the input, decide: subject (bucket)
+     → subbucket file → topic (`##` section), using the status table and
+     Topic Details blocks in `INDEX.md`.
+   - **Prefer extending an existing written topic** (bold in the table, listed
+     in Topic Details) over creating a new one. Only open the actual subbucket
+     `.md` file once you've decided which one to edit — you shouldn't need to
+     open more than one or two candidate files just to figure out *where*
+     something goes.
+   - If a topic doesn't exist yet, add a new `##` section to the most relevant
+     existing subbucket file. Only create a brand-new subbucket file (a new
+     topic family that fits none of the existing ones) by copying
+     `notes/_templates/subbucket-note.md`; only create a new subject/bucket if
+     it's genuinely outside DSA/LLD/HLD/SQL.
+   - One input often covers several unrelated topics (e.g. a lecture that
+     mixes a language gotcha with an algorithm problem) — work out the full
+     topic → subbucket mapping before writing anything.
 
 3. **If the input was a file**, copy the original into
    `notes/<Subject>/sources/<original-filename>` (unmodified) so there's a
-   citable source of truth, and reference it from the note's frontmatter
-   (`source:` field). Skip this step for pasted-text input.
+   citable source of truth, and reference it from the frontmatter `source:`
+   field of whichever subbucket file you write into. Skip this step for
+   pasted-text input. For images whose content gets fully captured into the
+   written note (e.g. a dry-run trace or a problem's code), they don't need to
+   be kept afterward — ask the user if unsure whether to remove them.
 
-4. **Write the detailed note** at `notes/<Subject>/<topic-slug>.md`:
+4. **Write or extend the topic** inside its subbucket file, following
+   `notes/_templates/subbucket-note.md`'s per-topic skeleton:
 
-   ```markdown
-   ---
-   title: <Human Readable Title>
-   subject: DSA | LLD | HLD
-   tags: [tag1, tag2]
-   difficulty: easy | medium | hard
-   frequency: low | medium | high
-   created: <YYYY-MM-DD>
-   updated: <YYYY-MM-DD>
-   reviewed: <YYYY-MM-DD>
-   source: <path under sources/, or "lecture notes">
-   related: [<other-topic-slug>, ...]
-   ---
+   ```
+   ## <Topic Name>
 
-   # <Title>
+   > One-line summary of this topic.
 
-   > One-paragraph plain-English summary — what this is and why it matters
-   > for interviews.
-
-   ## Core Concept
-   (explain properly, don't just restate the rough notes — fill gaps,
-   define terms, add the "why", not just the "what")
-
-   ## Details / Walkthrough
-   (sub-headed sections as needed: mechanism, steps, variants, complexity
-   analysis for DSA; class design, trade-offs for LLD; components,
-   trade-offs, scaling numbers for HLD)
-
-   ## Examples
-   (worked example, or a small code snippet, matched to the subject)
-
-   ## Common Mistakes / Edge Cases
-
-   ## Interview Angle
-   ### How interviewers test this
-   (what variations to expect, typical follow-up questions, how the
-   problem is escalated mid-interview — e.g. "what if the input
-   doesn't fit in memory?", "can you do it in-place?")
-
-   ### Pattern Recognition — Keywords → Approach
+   ### Core Concept
+   ### Details / Walkthrough
+   ### Examples
+   ### Common Mistakes / Edge Cases
+   ### Interview Angle
+   **How interviewers test this:** ...
+   **Pattern Recognition — Keywords → Approach**
    | Constraint / Keyword in Problem | Think of This Pattern |
    |---|---|
-   | "contiguous subarray", "window of size k" | Sliding Window |
-   | ... | ... |
-   (Map the specific constraints, phrases, and keywords that appear
-   in interview problem statements to the solving pattern taught in
-   this topic. This table helps the reader build the reflex:
-   "when I see X in a problem, I should reach for Y.")
-
-   ## Related Notes
-   - [<Other Topic>](../<OtherSubject>/<other-topic-slug>.md) — why it's related
-
-   ## Cheat Sheet
-   → [<Title> Cheat Sheet](cheatsheets/<topic-slug>-cheatsheet.md)
    ```
 
-   Rewrite/expand the rough notes into something genuinely detailed and
-   correct — don't just reformat what the user typed. Fix gaps, add missing
-   context, correct errors if the rough notes got something wrong (flag the
-   correction inline briefly).
+   - Language for code/snippets: Java for DSA and LLD (Spring Boot idioms
+     where relevant for LLD); React or Vue.js for frontend-related LLD/HLD
+     topics; real SQL for SQL topics. Never pseudocode — always runnable code.
+   - Rewrite/expand the rough notes into something genuinely detailed and
+     correct — don't just reformat what the user typed. Fill gaps, add
+     missing context, and correct errors if the rough notes got something
+     wrong (flag the correction briefly, inline, don't silently overwrite it).
+   - If a topic was `_Not yet written._`, replace that line with the content.
+   - The "Interview Angle" section (with the keyword→pattern table) is
+     required for DSA topics and recommended for LLD/HLD/SQL — for LLD/HLD,
+     focus the table on "requirement phrase → design component/pattern"
+     (e.g. "real-time updates" → WebSocket/SSE, "millions of users" →
+     horizontal scaling/sharding).
+   - Bump the subbucket file's frontmatter `updated` date, and its `status`
+     (`stub` → `partial` → `complete`) if this changes how much of the file is
+     written.
 
-5. **Write the cheat sheet** at
-   `notes/<Subject>/cheatsheets/<topic-slug>-cheatsheet.md`. Keep it short
-   and scannable — this is for last-minute review, not re-reading the full
-   note. Always include all three sections:
-
-   ```markdown
-   ---
-   title: <Title> — Cheat Sheet
-   subject: DSA | LLD | HLD
-   related_note: ../<topic-slug>.md
-   reviewed: <YYYY-MM-DD>
-   ---
-
-   # <Title> — Cheat Sheet
-
-   ## Quick Recall
-   - key definitions, formulas, time/space complexity, one-liners
-
-   ## Patterns / Snippets
-   - reusable code template or design pattern skeleton
-     **Language**: Java for DSA and LLD (use Spring Boot idioms for
-     LLD where relevant); React or Vue.js for frontend-related LLD/HLD
-     topics. Never use pseudocode — always real, runnable code.
-
-   ## Pitfalls & Likely Questions
-   - Q: ... A: ... (terse)
-   - gotchas / edge cases that trip people up
-   ```
+5. **Extend the subject's consolidated `notes/<Subject>/cheatsheet.md`** — add
+   or extend the matching `###` topic section. Keep it genuinely compressed
+   (one-liners, formulas, one minimal snippet) — this is for 5-minute
+   pre-interview scanning, not a second copy of the full note. Bump its
+   `reviewed` date.
 
 6. **Cross-link related topics (auto-link, not just suggest).**
-   - Search existing notes (`Grep`/`Glob` across `notes/**/*.md`) for topics
-     conceptually related to the new one — including across subjects (e.g.
-     LLD Observer pattern ↔ HLD pub-sub, DSA heaps ↔ HLD priority
-     scheduling).
-   - Add entries to the new note's `related:` frontmatter and `## Related
-     Notes` section.
-   - Also **edit the related existing notes** to add a backlink to the new
-     note in their own `## Related Notes` section and `related:`
-     frontmatter, so links are bidirectional. Don't touch anything else in
-     those files.
-   - Use relative Markdown links (`[Title](../Subject/topic-slug.md)`),
+   - Search the vault (`Grep`/`Glob` across `notes/**/*.md`, and the Topic
+     Details blocks in `INDEX.md`) for topics conceptually related to the
+     new/extended one — including across subjects (e.g. LLD Observer ↔ HLD
+     pub-sub, DSA heaps ↔ HLD priority scheduling).
+   - Add entries to the subbucket file's `related:` frontmatter and its
+     `## Related Notes` section.
+   - Also **edit the related existing subbucket files** to add a reciprocal
+     backlink in their own `related:` and `## Related Notes`, so links are
+     bidirectional. Don't touch anything else in those files.
+   - Use relative Markdown links (`[Title](../Subject/subbucket-slug.md)`),
      never bare filenames or wiki-links.
 
 7. **Update `notes/INDEX.md`.**
-   - One `##` section per subject (DSA, LLD, HLD), each a bullet list:
-     `- [Title](DSA/topic-slug.md) · [cheat sheet](DSA/cheatsheets/topic-slug-cheatsheet.md)`.
-   - Add the new topic under the right subject, keeping the list
-     alphabetical. If the file doesn't exist yet, create it with all three
-     subject headings.
+   - Bold any topic name in the status table that's now written; flip the
+     subbucket's status (⚪→🟡→🟢) if it changed.
+   - Add or update that subbucket's line in the subject's **Topic Details**
+     block with a short keyword summary of what's now covered. This is what
+     keeps future runs of this skill cheap — routing new content should be
+     possible from `INDEX.md` alone, without reopening every subbucket file.
 
-8. **Report back concisely**: which files were created vs. updated, and
-   which existing notes got a new cross-link — so the user can see the
-   graph growing without opening every file.
+8. **Report back concisely**: which subbucket files were created vs.
+   extended, which topics changed status, and which existing notes got a new
+   cross-link — so the user can see the graph growing without opening every file.
 
 ## Notes on quality
 
-- Detailed note = teach it properly, as if writing the explanation you'd
-  want when revising months later. Cheat sheet = compressed for 5-minute
-  pre-interview scanning. Keep them genuinely different in density, not
-  the same content twice.
-- Prefer merging into existing topic files over creating near-duplicates —
-  check the vault before writing.
-- Keep filenames and headings stable once created; append/extend rather
-  than renaming, so links made elsewhere in the vault don't break.
-- Set `difficulty` and `frequency` based on the content and your
-  knowledge of interview patterns. If the rough notes don't hint at
-  difficulty, infer from the concept's complexity. `frequency` reflects
-  how commonly the topic appears in real tech interviews.
-- Set `reviewed` to the creation date on first write. The user will
-  update this field manually when they revisit the note; don't
-  auto-bump it on edits.
-- The "Interview Angle" section is required for DSA notes and
-  recommended for LLD/HLD. The keyword→pattern table is especially
-  important for DSA — it trains pattern-matching instincts. For LLD/HLD,
-  focus the table on "requirement phrases → design component/pattern"
-  (e.g. "real-time updates" → WebSocket / SSE, "millions of users" →
-  horizontal scaling / sharding).
+- Detailed note = teach it properly, as if writing the explanation you'd want
+  when revising months later. Cheat sheet = compressed for 5-minute
+  pre-interview scanning. Keep them genuinely different in density, not the
+  same content twice.
+- Prefer merging into an existing topic over creating near-duplicates — check
+  `INDEX.md`'s Topic Details block before writing.
+- Keep filenames and headings stable once created; append/extend rather than
+  renaming, so links made elsewhere in the vault don't break.
+- Set `difficulty` and `frequency` based on the content and your knowledge of
+  interview patterns; infer difficulty if the rough notes don't hint at it.
+  `frequency` reflects how commonly the topic appears in real interviews.
+- Set `reviewed` to the creation date on first write. The user updates this
+  field manually when they revisit the note; don't auto-bump it on edits.
+- If a referenced source (external PDF, image) doesn't fully resolve — e.g. a
+  problem statement mentioned but not captured anywhere — write the note from
+  what's available, flag clearly what was reconstructed vs. sourced verbatim,
+  and note what's still missing, rather than leaving a silent gap.

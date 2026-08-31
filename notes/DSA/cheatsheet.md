@@ -2,7 +2,7 @@
 title: DSA — Cheat Sheet
 subject: DSA
 type: cheatsheet
-reviewed: 2026-08-20
+reviewed: 2026-08-31
 covers: [arrays-searching-sorting, two-pointers-sliding-window, hashing-and-strings, linkedlist-stack-queue, trees-and-bst, heaps-and-greedy, graphs, recursion-and-backtracking, dynamic-programming, bit-and-math]
 ---
 
@@ -19,6 +19,7 @@ Note: [arrays-searching-sorting](arrays-searching-sorting.md)
 - Inversion = pair (i,j), i<j, a[i]>a[j]. Max = N·(N-1)/2 → use **`long`**.
 - Trick: when picking from the **right** half during merge, `count += left.size() - i`.
 - `<=` in merge keeps stability & avoids overcounting; wrap `subList` in `new ArrayList<>()` (it's a view).
+- Comparator: `(a,b) -> a-b` can overflow — use `Integer::compare` / `Integer.compare(a,b)`.
 
 ```java
 if (left.get(i) <= right.get(j)) arr.set(k++, left.get(i++));
@@ -43,12 +44,28 @@ while (L<R){int s=a[L]+a[R];
   if(s==k){/*hit*/ L++;R--;} else if(s<k)L++; else R--;}
 ```
 
+- **Pairs with diff B** (distinct values, dedupe): sort, `i=0,j=1`; `diff<B→j++`, `diff>B→i++`, `diff==B→count++` then skip the whole duplicate block of both `i` and `j`. Same code path handles `B=0` — no special case needed.
+- **Pairs with sum B, index-pairs counted** (duplicates multiply, not skip): converging `L/R`; if `a[L]==a[R]` the whole window is one value → `n*(n-1)/2`; else multiply block sizes `cl*cr`.
+- Java: `list.get(i) == list.get(j)` fails for boxed `Integer` ≥ 128 (cache only covers −128..127) — always `.equals()` for boxed-vs-boxed comparisons.
+
 ### Sliding Window · Fast & Slow · Intervals
 _(to be added)_
 
 ## Hashing & Strings
 Note: [hashing-and-strings](hashing-and-strings.md)
 
+### Frequency Patterns
+- 3 pair formulas (`n` = freq of a value): **i<j** → `n*(n-1)/2` (nC2, ~90% of "count pairs"); **i≠j ordered** → `n*(n-1)` (nP2); **any i,j incl. self** → `n²`.
+- On-the-fly: `pairs += freq.get(x)` **before** incrementing `freq[x]` — avoids a second pass.
+- Cast before multiplying: `(long) n * (n - 1)`, never `(long)(n * (n - 1))` — the overflow already happened inside the parens.
+- Building keys/strings with `+=` in a loop is O(N²) (String is immutable) — use `StringBuilder`.
+
+```java
+pairs += freq.getOrDefault(num, 0);
+freq.merge(num, 1, Integer::sum);
+```
+
+### Hashing · String Algorithms
 _(to be added)_
 
 ## Linked List, Stack & Queue
@@ -97,6 +114,28 @@ _(to be added)_
 ## Recursion & Backtracking
 Note: [recursion-and-backtracking](recursion-and-backtracking.md)
 
+### Backtracking
+- Template: **choose → explore → un-choose**. Un-choose is required only for *shared mutable* state (`StringBuilder`, `List`, `visited[]`) — params passed by value (`int`, `String`) auto-revert on return, no un-choose line needed.
+- DFS = traversal; **backtracking = DFS + prune** — abandon a branch the instant it's proven invalid, don't wait to reach the leaf.
+- Generate Parentheses: guard `open<A` then `close<open`; base case `open==A && close==A`.
+
+```java
+if (open < A) { sb.append('('); solve(...); sb.deleteCharAt(sb.length()-1); }
+if (close < open) { sb.append(')'); solve(...); sb.deleteCharAt(sb.length()-1); }
+```
+
+### Subsets & Permutations
+- **Subsets**: 2 choices per *element* (include/exclude), 2^N results, no `visited[]` needed.
+- **Permutations**: shrinking choices per *position* (N, N-1, …), N! results, **needs `visited[]`**.
+- Always copy when recording (`new ArrayList<>(curr)` / `.toString()`) — `curr`/`path` is one shared mutable object across the whole recursion.
+- Grid paths (Down/Right only) & Steps (1-or-2) are the same 2-choices-per-state template; trying the smaller choice first (`D` before `R`, `1` before `2`) gives lexicographic output for free.
+
+```java
+solve(idx+1, curr, result);                                                   // exclude
+curr.add(arr[idx]); solve(idx+1, curr, result); curr.remove(curr.size()-1);   // include
+```
+
+### Recursion · Divide & Conquer
 _(to be added)_
 
 ## Dynamic Programming
@@ -130,5 +169,15 @@ for(int i=2;(long)i*i<=N;i++) if(!comp[i])
   for(int j=i*i;j<=N;j+=i) comp[j]=true;
 ```
 
-### Bit Manipulation · Math Tricks
+### Math Tricks
+- Bijective base-26 (Excel column title): no zero digit, so shift by 1 before extracting — `digit=(n-1)%26`, `n=(n-1)/26`. Plain `n%26`/`n/26` breaks at multiples of 26.
+- Digits come out right→left — append to `StringBuilder` and `.reverse()` once; never prepend to a `String` in the loop.
+- `(char)('A'+digit)` computes the letter directly — no need for a lookup `ArrayList<Character>`.
+
+```java
+while (n > 0) { sb.append((char)('A' + (n-1)%26)); n = (n-1)/26; }
+return sb.reverse().toString();
+```
+
+### Bit Manipulation
 _(to be added)_

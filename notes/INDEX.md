@@ -16,8 +16,19 @@ topics · **Topic** = a `##` section inside that file.
 - New buckets (e.g. CS-Fundamentals, Behavioral) can be added later with the same layout.
 
 **Status:** 🟢 complete · 🟡 partial (some topics written) · ⚪ stub (skeleton only).
-Filling a topic? Update its note, add it to the subject cheat sheet, and bump the
-file's `status` / `updated`.
+Filling a topic? Update its note, add it to the subject cheat sheet, bump the
+file's `status` / `updated`, and update that subject's **Topic Details** block
+below (see next paragraph).
+
+**This file is the single source of truth for the vault's structure.** The
+`/notes` skill (`.claude/skills/notes/SKILL.md`) reads only this file to decide
+where new content belongs — it does not hardcode the layout, subject list, or
+routing itself. Each subject with written content has a **Topic Details** block
+under its table: one line per written topic with enough keyword detail to
+decide "does this belong here?" without opening the subbucket file. Keep both
+the status table and the Topic Details block current — that's what keeps
+future `/notes` runs cheap (route from this file alone) instead of expensive
+(open every candidate file to check).
 
 ---
 
@@ -29,14 +40,32 @@ file's `status` / `updated`.
 |---|---|---|
 | [arrays-searching-sorting](DSA/arrays-searching-sorting.md) | Arrays · **Sorting (Merge Sort & Inversion Count)** · Binary Search · Prefix Sum | 🟡 |
 | [two-pointers-sliding-window](DSA/two-pointers-sliding-window.md) | **Two Pointers** · Sliding Window · Fast & Slow · Intervals | 🟡 |
-| [hashing-and-strings](DSA/hashing-and-strings.md) | Hashing · Frequency Patterns · String Algorithms | ⚪ |
+| [hashing-and-strings](DSA/hashing-and-strings.md) | Hashing · **Frequency Patterns** · String Algorithms | 🟡 |
 | [linkedlist-stack-queue](DSA/linkedlist-stack-queue.md) | Linked List · Stack · **Queue & Deque** · Monotonic Stack | 🟡 |
 | [trees-and-bst](DSA/trees-and-bst.md) | Binary Tree · BST · Traversals · Trie | ⚪ |
 | [heaps-and-greedy](DSA/heaps-and-greedy.md) | Heap / Priority Queue · Top-K · Greedy | ⚪ |
 | [graphs](DSA/graphs.md) | BFS/DFS · Shortest Path · **Union-Find & MST** · Topological Sort | 🟡 |
-| [recursion-and-backtracking](DSA/recursion-and-backtracking.md) | Recursion · Backtracking · Subsets/Permutations · Divide & Conquer | ⚪ |
+| [recursion-and-backtracking](DSA/recursion-and-backtracking.md) | **Recursion** · **Backtracking** · **Subsets & Permutations** · Divide & Conquer | 🟡 |
 | [dynamic-programming](DSA/dynamic-programming.md) | DP Basics · **1D DP (Max Product Subarray)** · 2D/Knapsack · DP on Strings | 🟡 |
-| [bit-and-math](DSA/bit-and-math.md) | Bit Manipulation · **Number Theory (Primes/Sieve)** · Math Tricks | 🟡 |
+| [bit-and-math](DSA/bit-and-math.md) | Bit Manipulation · **Number Theory (Primes/Sieve)** · **Math Tricks** | 🟡 |
+
+### DSA — Topic Details (routing index)
+
+Only written topics are listed. If incoming content matches one of these, extend
+it — don't create a new topic or file. Unlisted/⚪ topics in the table above have
+no content yet, so any new material for them just fills the stub.
+
+- **arrays-searching-sorting.md → Sorting** — Merge Sort & Inversion Count: divide & conquer, stability, `subList` view gotcha, inversion count via the merge step, `long` overflow, safe comparator (`Integer.compare` vs `a-b`).
+- **two-pointers-sliding-window.md → Two Pointers** — converging L/R on sorted arrays; hash-set vs hash-map choice; duplicate handling (distinct-value dedupe vs index-pair nC2/nP2); pairs with given difference; pairs with given sum (duplicates counted); pointer-invariant / "don't skip candidates" pitfalls; `Integer ==` vs `.equals()`.
+- **hashing-and-strings.md → Frequency Patterns** — nC2 / nP2 / n² pair-counting formulas; on-the-fly vs batch frequency counting; cast-before-multiply overflow; `StringBuilder` vs `String` concatenation.
+- **linkedlist-stack-queue.md → Queue & Deque** — BFS via Queue; `ArrayDeque` vs `LinkedList`; mark-visited-on-enqueue; level-order size-snapshot pattern.
+- **graphs.md → Union-Find & MST** — Prim's vs Kruskal's; path compression + union by rank; cycle detection via Union-Find.
+- **recursion-and-backtracking.md → Recursion** — base/recursive case; DFS-vs-backtracking distinction.
+- **recursion-and-backtracking.md → Backtracking** — choose → explore → un-choose template; Generate Parentheses (open/close bracket guards).
+- **recursion-and-backtracking.md → Subsets & Permutations** — include/exclude template (Subsets, Subset Sum) vs `visited[]` template (Permutations); grid paths (Down/Right only); steps (1-or-2 climbing); "try the smaller choice first" for free lexicographic order.
+- **dynamic-programming.md → 1D DP** — Max Product Subarray: track running max & min together, sign-flip handling, zero resets both.
+- **bit-and-math.md → Number Theory** — Sieve of Eratosthenes, prime factorization, SPF sieve, divisor-count sieve, GCD/LCM.
+- **bit-and-math.md → Math Tricks** — bijective base-26 (Excel column title), `StringBuilder` digit-building right-to-left.
 
 ## LLD
 
@@ -73,3 +102,7 @@ file's `status` / `updated`.
 | [aggregation-and-grouping](SQL/aggregation-and-grouping.md) | **Aggregate Functions · GROUP BY · WHERE vs HAVING · Self-Join** | 🟡 |
 | [joins-and-subqueries](SQL/joins-and-subqueries.md) | Join Types · Self-Join · Subqueries · CTEs | ⚪ |
 | [window-functions](SQL/window-functions.md) | Window Basics · Ranking · Running Aggregates | ⚪ |
+
+### SQL — Topic Details (routing index)
+
+- **aggregation-and-grouping.md → Aggregate Functions · GROUP BY · WHERE vs HAVING · Self-Join** — _(add specific keywords here as this topic is filled in further)_.
