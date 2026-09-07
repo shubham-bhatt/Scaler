@@ -61,8 +61,8 @@ no content yet, so any new material for them just fills the stub.
 - **linkedlist-stack-queue.md → Queue & Deque** — BFS via Queue; `ArrayDeque` vs `LinkedList`; mark-visited-on-enqueue; level-order size-snapshot pattern.
 - **graphs.md → Union-Find & MST** — Prim's vs Kruskal's; path compression + union by rank; cycle detection via Union-Find.
 - **recursion-and-backtracking.md → Recursion** — base/recursive case; DFS-vs-backtracking distinction.
-- **recursion-and-backtracking.md → Backtracking** — choose → explore → un-choose template; Generate Parentheses (open/close bracket guards).
-- **recursion-and-backtracking.md → Subsets & Permutations** — include/exclude template (Subsets, Subset Sum) vs `visited[]` template (Permutations); grid paths (Down/Right only); steps (1-or-2 climbing); "try the smaller choice first" for free lexicographic order.
+- **recursion-and-backtracking.md → Backtracking** — choose → explore → un-choose template; Generate Parentheses (open/close bracket guards); beginner Java syntax traps (`""` vs `''`, void helper + shared list vs return-at-every-branch).
+- **recursion-and-backtracking.md → Subsets & Permutations** — include/exclude template (Subsets, Subset Sum) vs `visited[]` template (Permutations); grid paths (Down/Right only); steps (1-or-2 climbing); "try the smaller choice first" for free lexicographic order; Java collection-API traps (`.length()`/`.size()`/`.length`, `=` vs `==`, `List.remove(int)` by-index, `new ArrayList<Integer>()` syntax).
 - **dynamic-programming.md → 1D DP** — Max Product Subarray: track running max & min together, sign-flip handling, zero resets both.
 - **bit-and-math.md → Number Theory** — Sieve of Eratosthenes, prime factorization, SPF sieve, divisor-count sieve, GCD/LCM.
 - **bit-and-math.md → Math Tricks** — bijective base-26 (Excel column title), `StringBuilder` digit-building right-to-left.

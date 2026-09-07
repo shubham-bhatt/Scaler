@@ -35,6 +35,7 @@ not by re-adding structure to this file.
      with "see attached image" — the image is frequently where the actual
      missing content is; don't skip it.
    - If none of the above is clear, ask what to process.
+   - Don't read data from other folders than 'notes/' until user mentioned the location of the file. If the user didn't mention the location of the file, ask for it.
 
 2. **Read `notes/INDEX.md`, then classify.**
    - For each distinct piece of content in the input, decide: subject (bucket)

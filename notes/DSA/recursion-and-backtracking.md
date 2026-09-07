@@ -7,7 +7,7 @@ topics: [Recursion, Backtracking, Subsets & Permutations, Divide & Conquer]
 difficulty: medium
 frequency: high
 created: 2026-08-20
-updated: 2026-08-31
+updated: 2026-09-02
 reviewed: 2026-08-20
 source: lecture notes
 related: [dynamic-programming, trees-and-bst, arrays-searching-sorting, two-pointers-sliding-window, graphs]
@@ -185,6 +185,11 @@ Valid outputs: `["(())", "()()"]`.
    per append; prefer one mutable `StringBuilder` shared across the recursion.
 4. **`A = 0`** — should return `[""]`, not an empty list; the base case
    `open==0 && close==0` is satisfied immediately.
+5. **Java syntax slips that look like logic bugs but are compile errors** —
+   `''` is a `char` literal, not an empty String (use `""`); a backtracking
+   helper is cleanest as `void`, mutating a shared `result` list, rather than
+   trying to `return` a value from every recursive branch — mixing the two is
+   exactly what causes a "missing return statement" compile error.
 
 ### Interview Angle
 
@@ -441,6 +446,14 @@ See the dry-run traces embedded in the Subsets and Permutations walkthroughs abo
    real interview follow-ups almost always add a constraint (target sum, no
    duplicates, subset size limit) that lets you cut a branch *before*
    recursing into it, not just check it at the leaf.
+6. **Java collection-API slips** — `String.length()` vs `List.size()` vs
+   plain-array `.length` (three different APIs for "how big", easy to mix up
+   under pressure); `if (idx = arr.length)` is *assignment*, not comparison —
+   always `==`; `List<Integer>.remove(int)` removes **by index**, not by
+   value (`list.remove(3)` deletes whatever is at index 3) — to pop the last
+   element of `curr` use `curr.remove(curr.size() - 1)`; and the generic type
+   goes right after `new` — `new ArrayList<Integer>()`, never
+   `new <ArrayList<Integer>>()`.
 
 ### Interview Angle
 

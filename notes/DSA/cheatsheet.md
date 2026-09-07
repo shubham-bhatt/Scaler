@@ -2,7 +2,7 @@
 title: DSA — Cheat Sheet
 subject: DSA
 type: cheatsheet
-reviewed: 2026-08-31
+reviewed: 2026-09-02
 covers: [arrays-searching-sorting, two-pointers-sliding-window, hashing-and-strings, linkedlist-stack-queue, trees-and-bst, heaps-and-greedy, graphs, recursion-and-backtracking, dynamic-programming, bit-and-math]
 ---
 
@@ -118,6 +118,7 @@ Note: [recursion-and-backtracking](recursion-and-backtracking.md)
 - Template: **choose → explore → un-choose**. Un-choose is required only for *shared mutable* state (`StringBuilder`, `List`, `visited[]`) — params passed by value (`int`, `String`) auto-revert on return, no un-choose line needed.
 - DFS = traversal; **backtracking = DFS + prune** — abandon a branch the instant it's proven invalid, don't wait to reach the leaf.
 - Generate Parentheses: guard `open<A` then `close<open`; base case `open==A && close==A`.
+- Java newbie traps: `""` not `''` for empty string; make the helper `void` + mutate a shared `result` list, don't try to `return` at every recursive branch (→ "missing return" compile error).
 
 ```java
 if (open < A) { sb.append('('); solve(...); sb.deleteCharAt(sb.length()-1); }
@@ -129,6 +130,7 @@ if (close < open) { sb.append(')'); solve(...); sb.deleteCharAt(sb.length()-1); 
 - **Permutations**: shrinking choices per *position* (N, N-1, …), N! results, **needs `visited[]`**.
 - Always copy when recording (`new ArrayList<>(curr)` / `.toString()`) — `curr`/`path` is one shared mutable object across the whole recursion.
 - Grid paths (Down/Right only) & Steps (1-or-2) are the same 2-choices-per-state template; trying the smaller choice first (`D` before `R`, `1` before `2`) gives lexicographic output for free.
+- Java traps: `.length()`(String) / `.size()`(List) / `.length`(array) are 3 different APIs; `=` in an `if` is assignment, not `==`; `list.remove(int)` deletes **by index** — pop last via `curr.remove(curr.size()-1)`; `new ArrayList<Integer>()` not `new <ArrayList<Integer>>()`.
 
 ```java
 solve(idx+1, curr, result);                                                   // exclude
