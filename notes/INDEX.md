@@ -1,6 +1,6 @@
 # Study Notes Index
 
-Interview-prep vault for **DSA, LLD, HLD, and SQL** (coding + design rounds).
+Interview-prep vault for **Introduction_To_PS (foundations), DSA, LLD, HLD, and SQL** (coding + design rounds).
 Plain Markdown so it renders anywhere.
 
 ## How this vault is organized
@@ -31,6 +31,37 @@ future `/notes` runs cheap (route from this file alone) instead of expensive
 (open every candidate file to check).
 
 ---
+
+## Introduction_To_PS
+
+Foundations module (kept **separate from DSA** by choice): complexity analysis, array basics, prefix sum, subarrays, sliding window.
+Later DSA topics build on it; DSA notes link back here.
+
+📄 **[Introduction_To_PS Cheat Sheet](Introduction_To_PS/cheatsheet.md)**
+
+| Subbucket | Topics | Status |
+|---|---|---|
+| [problem-solving-and-complexity](Introduction_To_PS/problem-solving-and-complexity.md) | **Counting Iterations & Math (AP/GP)** · **Factors & Primes (√N)** · **Logarithms & Loop Analysis** · **Big O & Constraints** · **Space Complexity** | 🟢 |
+| [arrays-basics](Introduction_To_PS/arrays-basics.md) | **Array Fundamentals** · **Pair Sum (Brute Force)** · **Reverse Array** · **Rotate Array** | 🟢 |
+| [prefix-sum-and-subarrays](Introduction_To_PS/prefix-sum-and-subarrays.md) | **Prefix Sum** · **Even/Odd Prefix & Special Index** · **Carry Forward** · **Subarrays** · **Contribution Technique** · **Fixed-Size Sliding Window** | 🟢 |
+
+### Introduction_To_PS — Topic Details (routing index)
+
+- **problem-solving-and-complexity.md → Counting Iterations & Math** — iterations vs execution time; range size `b-a+1`; AP sum `N(N+1)/2`; GP sum `a(rⁿ−1)/(r−1)`; sequential loops add, nested multiply.
+- **→ Factors & Primes (√N)** — factor pairs `(a, N/a)`, loop `a*a<=N`, perfect-square counts once, prime = exactly 2 factors, 10¹⁸: 317 years → 10 s.
+- **→ Logarithms & Loop Analysis** — `log_a b = c`, `floor(log₂N)` halving, `i*=2` O(log N), `i=0` infinite loop, loop-shape table (N², N log N, 2^N), iteration tables.
+- **→ Big O & Constraints** — asymptotic analysis, drop lower-order/constants, why, Big O limitations, TLE workflow, ~10⁸ iter/sec, constraint→complexity table (10⁶/10³/10²/20).
+- **→ Space Complexity** — extra space beyond input/output, int 4B/long 8B, O(1) vs O(N), in-place.
+- **arrays-basics.md → Array Fundamentals** — contiguous memory, `base+i*size` O(1) access, max element, dynamic arrays (ArrayList/vector/list), autoboxing.
+- **→ Pair Sum (Brute Force)** — `A[i]+A[j]==K, i!=j`, only `j<i` triangle, N(N-1)/2 → O(N²).
+- **→ Reverse Array** — two-pointer swap, O(1) space, reverse range `[L,R]`, extra-array O(N) variant.
+- **→ Rotate Array** — rotate right K: O(K·N) shifts vs 3 reversals O(N); `K %= N`; direction/left-rotate gotcha.
+- **prefix-sum-and-subarrays.md → Prefix Sum** — `P[i]=P[i-1]+A[i]`, `P[R]-P[L-1]`, Q queries O(N+Q), scoreboard analogy, in-place SC O(1).
+- **→ Even/Odd Prefix & Special Index** — `PE`/`PO` arrays; removing index flips suffix parity; count special indices O(N).
+- **→ Carry Forward** — calculate+use together, suffix sum; count `(a,g)` pairs `i<j`; smallest subarray containing min & max (closest-index tracking; `else if` bug when min==max).
+- **→ Subarrays** — N(N+1)/2 count, `N-K+1` of length K, print all O(N³), all sums via prefix / carry forward O(N²).
+- **→ Contribution Technique** — `A[i]*(i+1)*(N-i)`, sum of all subarray sums in O(N), cast-to-long overflow.
+- **→ Fixed-Size Sliding Window** — max sum of size-K subarray: brute O(N²)/prefix O(N)/slide `+A[i]-A[i-K]` O(N), O(1) space.
 
 ## DSA
 

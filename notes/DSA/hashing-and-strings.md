@@ -10,7 +10,7 @@ created: 2026-08-20
 updated: 2026-09-07
 reviewed: 2026-08-20
 source: lecture notes
-related: [two-pointers-sliding-window, arrays-searching-sorting, heaps-and-greedy]
+related: [two-pointers-sliding-window, arrays-searching-sorting, heaps-and-greedy, prefix-sum-and-subarrays, arrays-basics]
 status: partial
 ---
 
@@ -293,6 +293,8 @@ building, sliding window over strings — longest substring without repeating.)
 - [Two Pointers & Sliding Window](two-pointers-sliding-window.md) — hashing is the alternative to two pointers on unsorted data; window problems use frequency maps
 - [Arrays, Searching & Sorting](arrays-searching-sorting.md) — hashing vs sorting trade-off for dedup/lookups
 - [Heaps & Greedy](heaps-and-greedy.md) — Top-K Frequent Elements ranks the output of a frequency map by count
+- [Intro to PS: Prefix Sum, Subarrays & Sliding Window](../Introduction_To_PS/prefix-sum-and-subarrays.md) — prefix sums are the precursor of Subarray Sum = K via prefix + hashmap
+- [Intro to PS: Arrays Basics](../Introduction_To_PS/arrays-basics.md) — pair-sum brute force O(N²) that hashing improves to O(N)
 
 ## Cheat Sheet
 

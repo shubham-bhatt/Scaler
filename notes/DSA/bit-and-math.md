@@ -10,7 +10,7 @@ created: 2026-08-20
 updated: 2026-08-31
 reviewed: 2026-08-09
 source: lecture notes
-related: [arrays-searching-sorting, recursion-and-backtracking]
+related: [arrays-searching-sorting, recursion-and-backtracking, problem-solving-and-complexity]
 status: partial
 ---
 
@@ -242,6 +242,7 @@ String excelColumn(int n) {
 
 - [Arrays, Searching & Sorting](arrays-searching-sorting.md) — both rely on structured O(N log N) iteration
 - [Recursion & Backtracking](recursion-and-backtracking.md) — GCD and fast exponentiation are naturally recursive
+- [Intro to PS: Problem Solving & Complexity](../Introduction_To_PS/problem-solving-and-complexity.md) — √N factor counting / prime check is the seed of the Sieve
 
 ## Cheat Sheet
 

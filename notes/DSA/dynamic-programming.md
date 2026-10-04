@@ -10,7 +10,7 @@ created: 2026-08-20
 updated: 2026-09-07
 reviewed: 2026-08-09
 source: lecture notes
-related: [recursion-and-backtracking, arrays-searching-sorting]
+related: [recursion-and-backtracking, arrays-searching-sorting, prefix-sum-and-subarrays]
 status: partial
 ---
 
@@ -285,6 +285,7 @@ substrings, regex/wildcard matching.)
 
 - [Recursion & Backtracking](recursion-and-backtracking.md) — DP is memoized recursion; every DP starts as a brute-force recursion
 - [Arrays, Searching & Sorting](arrays-searching-sorting.md) — 1D DP scans arrays; contrast Kadane's with prefix sums
+- [Intro to PS: Prefix Sum, Subarrays & Sliding Window](../Introduction_To_PS/prefix-sum-and-subarrays.md) — carry-forward over subarrays is the seed of 1-D DP (Kadane-style)
 
 ## Cheat Sheet
 

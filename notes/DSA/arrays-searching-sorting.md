@@ -10,7 +10,7 @@ created: 2026-08-20
 updated: 2026-08-31
 reviewed: 2026-08-09
 source: lecture notes
-related: [two-pointers-sliding-window, dynamic-programming, bit-and-math]
+related: [two-pointers-sliding-window, dynamic-programming, bit-and-math, problem-solving-and-complexity, arrays-basics, prefix-sum-and-subarrays]
 status: partial
 ---
 
@@ -215,6 +215,9 @@ _Not yet written._
 - [Two Pointers & Sliding Window](two-pointers-sliding-window.md) — the merge step is two pointers walking two sorted halves; sorting enables converging two-pointer scans
 - [Dynamic Programming](dynamic-programming.md) — subarray optimization problems build on array scanning
 - [Bit Manipulation & Math](bit-and-math.md) — both rely on structured O(N log N) iteration
+- [Intro to PS: Problem Solving & Complexity](../Introduction_To_PS/problem-solving-and-complexity.md) — complexity counting (loops, log N, Big O, constraints) underlying every algorithm here
+- [Intro to PS: Arrays Basics](../Introduction_To_PS/arrays-basics.md) — array fundamentals, reverse, rotate — the prerequisites
+- [Intro to PS: Prefix Sum, Subarrays & Sliding Window](../Introduction_To_PS/prefix-sum-and-subarrays.md) — the written Prefix Sum material for this file's stub
 
 ## Cheat Sheet
 

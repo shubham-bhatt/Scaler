@@ -10,7 +10,7 @@ created: 2026-08-20
 updated: 2026-08-31
 reviewed: 2026-08-19
 source: lecture notes
-related: [arrays-searching-sorting, hashing-and-strings, linkedlist-stack-queue]
+related: [arrays-searching-sorting, hashing-and-strings, linkedlist-stack-queue, prefix-sum-and-subarrays, arrays-basics]
 status: partial
 ---
 
@@ -344,6 +344,8 @@ start, then sweep.)
 - [Arrays, Searching & Sorting](arrays-searching-sorting.md) — merge step is two pointers; sorting enables converging scans
 - [Hashing & Strings](hashing-and-strings.md) — the hash-set/hash-map alternative to two pointers; sliding window over strings uses frequency maps
 - [Linked List, Stack & Queue](linkedlist-stack-queue.md) — fast/slow pointers on linked lists; monotonic deque for window maximum
+- [Intro to PS: Prefix Sum, Subarrays & Sliding Window](../Introduction_To_PS/prefix-sum-and-subarrays.md) — fixed-size sliding window and carry-forward are the foundation for variable windows
+- [Intro to PS: Arrays Basics](../Introduction_To_PS/arrays-basics.md) — the `i<j` swap loop (reverse) is the simplest two-pointer pattern
 
 ## Cheat Sheet
 
