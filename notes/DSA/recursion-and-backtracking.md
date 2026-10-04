@@ -7,7 +7,7 @@ topics: [Recursion, Backtracking, Subsets & Permutations, Divide & Conquer]
 difficulty: medium
 frequency: high
 created: 2026-08-20
-updated: 2026-09-02
+updated: 2026-09-07
 reviewed: 2026-08-20
 source: lecture notes
 related: [dynamic-programming, trees-and-bst, arrays-searching-sorting, two-pointers-sliding-window, graphs]
@@ -109,6 +109,12 @@ void backtrack(state) {
 The "un-choose" step is what makes this *backtracking* rather than plain DFS —
 the state object is reused/mutated in place across sibling branches, so it
 must be restored to exactly what it was before trying the next option.
+
+**Alternate framing / checklist** for approaching a new backtracking problem
+before writing any code: **Decision → Choices → State → Base case → Undo** —
+what decision is being made at each step, what choices are available, what
+state needs to mutate (and later be restored), what stops the recursion, and
+what the undo looks like. Translates directly into the template above.
 
 ### Details / Walkthrough — Generate Parentheses
 
@@ -392,31 +398,43 @@ void allPaths(int i, int j, String path, int N, int M) {
 `C(N+M-2, N-1)` such paths (choosing which moves are `D`) →
 **O((N+M) · C(N+M-2, N-1))**, exponential in the worst case.
 
-### Details / Walkthrough — Steps (climb 1 or 2 at a time) *(reconstructed)*
+### Details / Walkthrough — Steps (climb 1 or 2 at a time)
 
-> *The lecture referenced this as one of three problems in an external PDF
-> (`DSA__Backtracking_2.pdf`); the rough notes captured only the framing —
-> "visualize moving from end to base" and that trying the smaller step first
-> gives lexicographic order — with no surviving code. Reconstructed below as
-> the standard version of the problem; verify against the source PDF if the
-> exact signature there differs.*
-
-Given `N` stairs, print every distinct sequence of 1-steps and 2-steps that
-sums to `N` — the same choose/explore/un-choose shape as Grid Paths above:
+Given `A` stairs, generate every distinct sequence of 1-steps and 2-steps that
+sums to `A` — the same choose/explore/un-choose shape as Grid Paths above,
+counting **up** from 0 rather than down from `A`:
 
 ```java
-void allWays(int remaining, String path) {
-    if (remaining == 0) {
-        System.out.println(path);
+void climbUp(int steps, List<Integer> curr, List<List<Integer>> ans, int A) {
+    if (steps == A) {
+        ans.add(new ArrayList<>(curr));      // copy — never add curr directly
         return;
     }
-    if (remaining >= 1) allWays(remaining - 1, path + "1");  // smaller step first → lexicographic order
-    if (remaining >= 2) allWays(remaining - 2, path + "2");
+    curr.add(1);
+    climbUp(steps + 1, curr, ans, A);
+    curr.remove(curr.size() - 1);            // un-choose
+
+    if (steps + 2 <= A) {                    // guard: don't overshoot A
+        curr.add(2);
+        climbUp(steps + 2, curr, ans, A);
+        curr.remove(curr.size() - 1);        // un-choose
+    }
 }
+// call: climbUp(0, new ArrayList<>(), ans, A);
 ```
-Trying the 1-step before the 2-step at every call is the same lexicographic
-trick as `D` before `R` in Grid Paths — smallest choice first, consistently,
-gives sorted output for free without any extra sorting step afterward.
+
+Trying the 1-step before the 2-step at every call gives lexicographic order
+for free — same trick as `D` before `R` in Grid Paths. The `steps + 2 <= A`
+guard prunes the 2-step branch *before* recursing into it, instead of
+discovering the overshoot at the base case.
+
+**Count vs. generate — the DP fork:** if the question only asks "how many
+ways" rather than "list every way", this same recursion has repeated
+subtrees (`ways(3)` is computed both via `ways(5)`→`ways(4)`→`ways(3)` and
+directly via `ways(5)`→`ways(3)`) — that repetition is the signal to stop
+enumerating and memoize instead. See
+[DP Basics](dynamic-programming.md#dp-basics) for the counting version of this
+exact problem (Climbing Stairs) and the overlapping-subproblems diagram.
 
 ### Examples
 
@@ -454,6 +472,12 @@ See the dry-run traces embedded in the Subsets and Permutations walkthroughs abo
    element of `curr` use `curr.remove(curr.size() - 1)`; and the generic type
    goes right after `new` — `new ArrayList<Integer>()`, never
    `new <ArrayList<Integer>>()`.
+7. **Marking the wrong thing visited** (Permutations) — `visited[]` tracks
+   *positions/indices* already used, not *values*. Marking
+   `visited[A.get(i)] = true` instead of `visited[i] = true` throws
+   `ArrayIndexOutOfBoundsException` the instant a value is ≥ `visited.length`
+   (and silently produces wrong permutations even when it doesn't crash).
+   Always index `visited[]` by the loop variable `i`, never by the element's value.
 
 ### Interview Angle
 

@@ -7,10 +7,10 @@ topics: [Hashing, Frequency Patterns, String Algorithms]
 difficulty: medium
 frequency: high
 created: 2026-08-20
-updated: 2026-08-31
+updated: 2026-09-07
 reviewed: 2026-08-20
 source: lecture notes
-related: [two-pointers-sliding-window, arrays-searching-sorting]
+related: [two-pointers-sliding-window, arrays-searching-sorting, heaps-and-greedy]
 status: partial
 ---
 
@@ -20,14 +20,101 @@ status: partial
 > "have I seen this?" and "how many of each?" into constant time, and most string
 > problems are frequency-counting or sliding-window in disguise.
 
-**Topics:** Hashing · Frequency Patterns · String Algorithms
+**Topics:** [Hashing](#hashing) · Frequency Patterns · String Algorithms
 
 ---
 
 ## Hashing
 
-_Not yet written._ (HashMap vs HashSet, collision handling, load factor, when
-hashing beats sorting/two-pointers, custom keys / hashing pairs.)
+> A `HashSet` turns "does this value exist?" into O(1) average lookup — the
+> lever that replaces an O(N log N) sort or an O(N²) nested scan whenever a
+> problem only needs *membership*, not order.
+
+### Core Concept
+
+**HashSet vs HashMap:** use a `Set` when you only need "have I seen this
+value?"; use a `Map` when you also need a count, an index, or some other
+value attached to the key (see [Frequency Patterns](#frequency-patterns)
+below for the counting case). Reaching for a `Set` when the problem actually
+needs a count is a common miss — a `Set` can't answer "how many".
+
+**When hashing beats sorting:** sorting costs `O(N log N)` and reorders the
+data; a hash set costs `O(N)` to build and preserves nothing about order —
+use it when the problem only cares about *which* values are present, not
+their positions or relative order.
+
+### Details / Walkthrough — Longest Consecutive Sequence
+
+> Given an unsorted array of integers, find the length of the longest run of
+> consecutive integers (they don't need to be contiguous *in the array*,
+> just consecutive as integers, e.g. `[100,4,200,1,3,2]` → the run `1,2,3,4`).
+
+**Pattern:** `HashSet → find each sequence's start → expand`
+
+```java
+int longestConsecutive(int[] nums) {
+    Set<Integer> set = new HashSet<>();
+    for (int num : nums) set.add(num);
+
+    int max = 0;
+    for (int num : set) {
+        if (!set.contains(num - 1)) {          // only start counting at a sequence's start
+            int curr = num;
+            int len = 1;
+            while (set.contains(curr + 1)) {
+                curr++;
+                len++;
+            }
+            max = Math.max(max, len);
+        }
+    }
+    return max;
+}
+```
+
+**Key insight:** only start expanding a sequence when `num - 1` is **not** in
+the set. Without that guard, every element inside a run would re-scan the
+same run from scratch — starting only at true sequence-starts is what keeps
+the total work `O(N)` instead of `O(N²)` (each element is visited by the
+`while` loop at most once, across all outer-loop iterations combined, because
+only sequence-starts trigger a scan).
+
+### Examples
+
+`nums = [100, 4, 200, 1, 3, 2]` → set `{100,4,200,1,3,2}` → `1` has no
+`0` in the set, so it's a start: expands `1→2→3→4`, length **4**. `100` and
+`200` are isolated starts of length 1. Answer: **4**.
+
+### Common Mistakes / Edge Cases
+
+1. **Sorting first "to make it easier"** — works (`O(N log N)`) but throws
+   away the `O(N)` solution the problem is testing for; only reach for sorting
+   if the hash-set approach is genuinely blocked.
+2. **Forgetting the `!set.contains(num - 1)` guard** — without it, every
+   element re-expands its whole run, degrading to `O(N²)` in the worst case
+   (e.g. one giant consecutive run).
+3. **Duplicates in the input** — a `Set` naturally dedupes them; no special
+   handling needed, but worth stating explicitly if asked.
+4. **Empty array** — return `0`; the loop over an empty set never executes.
+
+### Interview Angle
+
+**How interviewers test this:**
+- Direct: "Longest Consecutive Sequence" (LC 128) — the `O(N)` (not
+  `O(N log N)`) constraint is usually stated explicitly to rule out sorting.
+- Follow-up: "return the actual sequence, not just its length" — track
+  `curr` at the point `max` is updated.
+- Follow-up: "what if the array is a stream (can't hold it all in memory)?" —
+  a plain hash set no longer works; different problem entirely.
+
+**Pattern Recognition — Keywords → Approach**
+
+| Constraint / Keyword in Problem | Think of This Pattern |
+|---|---|
+| "does this value exist", "have I seen this" | `HashSet`, O(1) average membership |
+| "longest run of consecutive integers", O(N) required | `HashSet` + expand only from sequence starts |
+| "need a count, not just presence" | `HashMap` instead — see [Frequency Patterns](#frequency-patterns) |
+| "O(N log N) is too slow" | Hashing is usually the O(N) alternative to sorting |
 
 ---
 
@@ -115,6 +202,58 @@ pairs = C(3,2) + C(1,2) + C(2,2) = 3 + 0 + 1 = **4**.
    once; if it's easier to build right-to-left, append and `.reverse()` at the end
    rather than prepending (`s = c + s` is O(N) per prepend).
 
+### Details / Walkthrough — Subarray Sum Equals K
+
+> Given an array and an integer `k`, count the number of contiguous
+> subarrays whose elements sum to `k`.
+
+**Core idea:** if `prefixSum[j] - prefixSum[i] = k` for some `i < j`, then the
+subarray `(i, j]` sums to `k`. Rearranged: for the current running sum, we
+need to know how many earlier prefix sums equal `currentSum - k` — track that
+in a frequency map as you scan, instead of recomputing prefix sums pairwise.
+
+```java
+int subarraySumEqualsK(int[] nums, int k) {
+    Map<Integer, Integer> prefixCounts = new HashMap<>();
+    prefixCounts.put(0, 1);       // empty prefix — handles subarrays starting at index 0
+    int sum = 0, count = 0;
+    for (int num : nums) {
+        sum += num;
+        count += prefixCounts.getOrDefault(sum - k, 0);
+        prefixCounts.put(sum, prefixCounts.getOrDefault(sum, 0) + 1);
+    }
+    return count;
+}
+```
+
+**Complexity:** O(N) time, O(N) space — one pass, one hash map, versus the
+O(N²) brute force of checking every `(i, j)` pair directly.
+
+**Why `prefixCounts.put(0, 1)` before the loop:** without it, a subarray that
+starts at index 0 and itself sums to exactly `k` is missed — `sum - k` would
+equal `0`, but `0` was never recorded as a "prefix sum seen so far" unless
+seeded up front (the empty prefix, before any elements, sums to 0).
+
+#### Examples
+
+`nums = [1,2,3], k=3` → prefix sums as scanned: `1, 3, 6`. At `sum=1`:
+`sum-k=-2`, not seen. At `sum=3`: `sum-k=0`, seen once (the seeded empty
+prefix) → count=1 (subarray `[1,2]`). At `sum=6`: `sum-k=3`, seen once
+(from `sum=3` above) → count=2 (subarray `[3]`). Total: **2**.
+
+#### Common Mistakes / Edge Cases
+
+1. **Forgetting to seed `prefixCounts.put(0, 1)`** — silently undercounts by
+   missing every subarray that starts at index 0.
+2. **Reading the current sum's own count before adding it** — the lookup
+   (`sum - k`) must happen **before** `sum` itself is recorded into the map
+   for this iteration, otherwise a single element equal to `k` would count
+   itself as a pair with itself.
+3. **Negative numbers in the array** — the prefix-sum approach still works
+   (unlike a sliding window, which breaks down once elements can be
+   negative) — this is precisely why hashing is preferred over a two-pointer
+   window here.
+
 ### Interview Angle
 
 **How interviewers test this:**
@@ -124,6 +263,11 @@ pairs = C(3,2) + C(1,2) + C(2,2) = 3 + 0 + 1 = **4**.
 - Follow-up: "What if an element can pair with itself?" → `n²`.
 - Watch for them quietly bumping `N` to `10^5` — that's the overflow trap; say
   out loud that you'd use `long` before they have to ask.
+- Direct: "Subarray Sum Equals K" (LC 560) → prefix-sum frequency map, seeded
+  with `{0: 1}`.
+- Follow-up: "What if the array has only non-negative numbers?" → a sliding
+  window becomes viable too (sum only grows/shrinks monotonically); with
+  negatives allowed, the prefix-sum + hashmap approach is required.
 
 **Pattern Recognition — Keywords → Approach**
 
@@ -148,6 +292,7 @@ building, sliding window over strings — longest substring without repeating.)
 
 - [Two Pointers & Sliding Window](two-pointers-sliding-window.md) — hashing is the alternative to two pointers on unsorted data; window problems use frequency maps
 - [Arrays, Searching & Sorting](arrays-searching-sorting.md) — hashing vs sorting trade-off for dedup/lookups
+- [Heaps & Greedy](heaps-and-greedy.md) — Top-K Frequent Elements ranks the output of a frequency map by count
 
 ## Cheat Sheet
 

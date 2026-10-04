@@ -40,13 +40,13 @@ future `/notes` runs cheap (route from this file alone) instead of expensive
 |---|---|---|
 | [arrays-searching-sorting](DSA/arrays-searching-sorting.md) | Arrays · **Sorting (Merge Sort & Inversion Count)** · Binary Search · Prefix Sum | 🟡 |
 | [two-pointers-sliding-window](DSA/two-pointers-sliding-window.md) | **Two Pointers** · Sliding Window · Fast & Slow · Intervals | 🟡 |
-| [hashing-and-strings](DSA/hashing-and-strings.md) | Hashing · **Frequency Patterns** · String Algorithms | 🟡 |
+| [hashing-and-strings](DSA/hashing-and-strings.md) | **Hashing** · **Frequency Patterns** · String Algorithms | 🟡 |
 | [linkedlist-stack-queue](DSA/linkedlist-stack-queue.md) | Linked List · Stack · **Queue & Deque** · Monotonic Stack | 🟡 |
 | [trees-and-bst](DSA/trees-and-bst.md) | Binary Tree · BST · Traversals · Trie | ⚪ |
-| [heaps-and-greedy](DSA/heaps-and-greedy.md) | Heap / Priority Queue · Top-K · Greedy | ⚪ |
-| [graphs](DSA/graphs.md) | BFS/DFS · Shortest Path · **Union-Find & MST** · Topological Sort | 🟡 |
+| [heaps-and-greedy](DSA/heaps-and-greedy.md) | Heap / Priority Queue · **Top-K** · Greedy | 🟡 |
+| [graphs](DSA/graphs.md) | **BFS/DFS** · Shortest Path · **Union-Find & MST** · Topological Sort | 🟡 |
 | [recursion-and-backtracking](DSA/recursion-and-backtracking.md) | **Recursion** · **Backtracking** · **Subsets & Permutations** · Divide & Conquer | 🟡 |
-| [dynamic-programming](DSA/dynamic-programming.md) | DP Basics · **1D DP (Max Product Subarray)** · 2D/Knapsack · DP on Strings | 🟡 |
+| [dynamic-programming](DSA/dynamic-programming.md) | **DP Basics** · **1D DP (Max Product Subarray)** · 2D/Knapsack · DP on Strings | 🟡 |
 | [bit-and-math](DSA/bit-and-math.md) | Bit Manipulation · **Number Theory (Primes/Sieve)** · **Math Tricks** | 🟡 |
 
 ### DSA — Topic Details (routing index)
@@ -57,12 +57,16 @@ no content yet, so any new material for them just fills the stub.
 
 - **arrays-searching-sorting.md → Sorting** — Merge Sort & Inversion Count: divide & conquer, stability, `subList` view gotcha, inversion count via the merge step, `long` overflow, safe comparator (`Integer.compare` vs `a-b`).
 - **two-pointers-sliding-window.md → Two Pointers** — converging L/R on sorted arrays; hash-set vs hash-map choice; duplicate handling (distinct-value dedupe vs index-pair nC2/nP2); pairs with given difference; pairs with given sum (duplicates counted); pointer-invariant / "don't skip candidates" pitfalls; `Integer ==` vs `.equals()`.
-- **hashing-and-strings.md → Frequency Patterns** — nC2 / nP2 / n² pair-counting formulas; on-the-fly vs batch frequency counting; cast-before-multiply overflow; `StringBuilder` vs `String` concatenation.
+- **hashing-and-strings.md → Hashing** — HashSet vs HashMap (membership vs count); when hashing beats sorting; Longest Consecutive Sequence (expand only from sequence starts, O(N)).
+- **hashing-and-strings.md → Frequency Patterns** — nC2 / nP2 / n² pair-counting formulas; on-the-fly vs batch frequency counting; cast-before-multiply overflow; `StringBuilder` vs `String` concatenation; Subarray Sum = K via prefix-sum + hashmap (seed `map.put(0,1)`).
 - **linkedlist-stack-queue.md → Queue & Deque** — BFS via Queue; `ArrayDeque` vs `LinkedList`; mark-visited-on-enqueue; level-order size-snapshot pattern.
+- **heaps-and-greedy.md → Top-K** — Top K Frequent Elements: HashMap freq count → sort/heap by frequency; size-K min-heap of opposite polarity for O(N + M log K); quickselect as the O(N) average alternative.
+- **graphs.md → BFS/DFS** — Binary Maze / shortest path in a 0-1 grid: `Queue<int[]>` of `{row,col,dist}`, 4-direction array, mark-visited-on-enqueue, why BFS (not DFS/backtracking) guarantees shortest path on unweighted grids.
 - **graphs.md → Union-Find & MST** — Prim's vs Kruskal's; path compression + union by rank; cycle detection via Union-Find.
 - **recursion-and-backtracking.md → Recursion** — base/recursive case; DFS-vs-backtracking distinction.
-- **recursion-and-backtracking.md → Backtracking** — choose → explore → un-choose template; Generate Parentheses (open/close bracket guards); beginner Java syntax traps (`""` vs `''`, void helper + shared list vs return-at-every-branch).
-- **recursion-and-backtracking.md → Subsets & Permutations** — include/exclude template (Subsets, Subset Sum) vs `visited[]` template (Permutations); grid paths (Down/Right only); steps (1-or-2 climbing); "try the smaller choice first" for free lexicographic order; Java collection-API traps (`.length()`/`.size()`/`.length`, `=` vs `==`, `List.remove(int)` by-index, `new ArrayList<Integer>()` syntax).
+- **recursion-and-backtracking.md → Backtracking** — choose → explore → un-choose template; Decision→Choices→State→Base case→Undo checklist; Generate Parentheses (open/close bracket guards); beginner Java syntax traps (`""` vs `''`, void helper + shared list vs return-at-every-branch).
+- **recursion-and-backtracking.md → Subsets & Permutations** — include/exclude template (Subsets, Subset Sum) vs `visited[]` template (Permutations); grid paths (Down/Right only); steps (1-or-2 climbing, confirmed `climbUp` version); "try the smaller choice first" for free lexicographic order; Java collection-API traps (`.length()`/`.size()`/`.length`, `=` vs `==`, `List.remove(int)` by-index, `new ArrayList<Integer>()` syntax, `visited[i]` vs `visited[A.get(i)]`).
+- **dynamic-programming.md → DP Basics** — Climbing Stairs: state/recurrence/overlap/memoize/optimize recipe; `ways(n)=ways(n-1)+ways(n-2)`; overlapping-subproblems tree; count (DP) vs generate-all (backtracking) fork; memo/tabulation/space-optimized versions.
 - **dynamic-programming.md → 1D DP** — Max Product Subarray: track running max & min together, sign-flip handling, zero resets both.
 - **bit-and-math.md → Number Theory** — Sieve of Eratosthenes, prime factorization, SPF sieve, divisor-count sieve, GCD/LCM.
 - **bit-and-math.md → Math Tricks** — bijective base-26 (Excel column title), `StringBuilder` digit-building right-to-left.

@@ -2,7 +2,7 @@
 title: DSA — Cheat Sheet
 subject: DSA
 type: cheatsheet
-reviewed: 2026-09-02
+reviewed: 2026-09-07
 covers: [arrays-searching-sorting, two-pointers-sliding-window, hashing-and-strings, linkedlist-stack-queue, trees-and-bst, heaps-and-greedy, graphs, recursion-and-backtracking, dynamic-programming, bit-and-math]
 ---
 
@@ -65,7 +65,22 @@ pairs += freq.getOrDefault(num, 0);
 freq.merge(num, 1, Integer::sum);
 ```
 
-### Hashing · String Algorithms
+- **Subarray Sum = K**: `prefixSum[j]-prefixSum[i]=k` → need count of earlier prefix sums `= sum-k`. Seed `map.put(0,1)` (empty prefix) or subarrays starting at index 0 are missed. Lookup `sum-k` **before** recording `sum` itself.
+
+```java
+sum += num; count += prefixCounts.getOrDefault(sum-k, 0);
+prefixCounts.put(sum, prefixCounts.getOrDefault(sum,0)+1);
+```
+
+### Hashing
+- `HashSet` = O(1) membership only; `HashMap` when you need a count/value too. Hashing beats sorting (`O(N log N)`) whenever order doesn't matter, only presence/count does.
+- **Longest Consecutive Sequence**: only expand from a true sequence start (`!set.contains(num-1)`) — else it degrades to O(N²) re-scanning the same run.
+
+```java
+if (!set.contains(num-1)) { int len=1; while(set.contains(num+len)) len++; max=Math.max(max,len); }
+```
+
+### String Algorithms
 _(to be added)_
 
 ## Linked List, Stack & Queue
@@ -92,6 +107,18 @@ _(to be added)_
 ## Heaps & Greedy
 Note: [heaps-and-greedy](heaps-and-greedy.md)
 
+### Top-K
+- **Top K Frequent**: `HashMap` freq count → sort by frequency desc → take first K. O(N + M log M).
+- Better for large M, small K: size-K **min-heap** keyed on frequency, evict smallest when size > K → O(N + M log K).
+- True O(N) average → **quickselect** on the frequency array.
+- Comparator direction matters: `(a,b)->b[1]-a[1]` = descending; flipped sign quietly returns the *least* frequent instead.
+
+```java
+PriorityQueue<int[]> minHeap = new PriorityQueue<>((a,b) -> a[1]-b[1]);
+minHeap.offer(new int[]{key, freq}); if (minHeap.size() > k) minHeap.poll();
+```
+
+### Heap / Priority Queue · Greedy
 _(to be added)_
 
 ## Graphs
@@ -108,7 +135,22 @@ int find(int[] p,int x){ if(p[x]!=x) p[x]=find(p,p[x]); return p[x]; }
 // Prim: skip if visited[dest]; Kruskal: add edge iff find(u)!=find(v)
 ```
 
-### BFS/DFS · Shortest Path · Topological Sort
+### BFS & DFS (Binary Maze / grid shortest path)
+- **Grid + shortest path + every move costs 1 → BFS**, never DFS/backtracking (DFS finds *a* path, not the shortest).
+- `Queue<int[]>` of `{row, col, dist}`; `dir[][]={{-1,0},{1,0},{0,-1},{0,1}}` for 4-directional moves.
+- **Mark visited on enqueue**, not dequeue — else the same cell queues multiple times.
+- Check **in-bounds before indexing** the grid (short-circuit `&&` order matters).
+
+```java
+q.add(new int[]{sr,sc,0}); visited[sr][sc]=true;
+while(!q.isEmpty()){ int[] cur=q.poll(); if(cur[0]==dr&&cur[1]==dc) return cur[2];
+  for(int[] d: dir){ int nr=cur[0]+d[0], nc=cur[1]+d[1];
+    if(nr>=0&&nr<R&&nc>=0&&nc<C&&grid[nr][nc]==1&&!visited[nr][nc]){ visited[nr][nc]=true; q.add(new int[]{nr,nc,cur[2]+1}); } } }
+```
+
+- Coding habit: for BFS, the `while(queue...)` loop usually *is* the algorithm — don't reach for a `helper()` just because there's a loop; helpers fit recursion/DFS more naturally (the function represents "solve from this state").
+
+### Shortest Path · Topological Sort
 _(to be added)_
 
 ## Recursion & Backtracking
@@ -154,7 +196,18 @@ int tMin=Math.min(A[i],Math.min(A[i]*mx,A[i]*mn));
 mx=tMax; mn=tMin; res=Math.max(res,mx);
 ```
 
-### DP Basics · 2D/Knapsack · DP on Strings
+### DP Basics (Climbing Stairs)
+- Recipe: **define state** (`ways(n)`) → **write recurrence** (`ways(n)=ways(n-1)+ways(n-2)`) → **spot overlap** (same state recomputed via multiple call paths) → **memoize/tabulate** → **optimize space**.
+- "Count the ways" → DP; "generate/print every way" → backtracking (output itself is exponential, see [Recursion & Backtracking](recursion-and-backtracking.md)).
+- Memo sentinel must be `-1`, not `0` — `0` can be a valid answer. Space-optimize to 2 rolling variables once only the last `k` states are needed.
+
+```java
+int prev2=1, prev1=1;
+for (int i=2;i<=n;i++){ int cur=prev1+prev2; prev2=prev1; prev1=cur; }
+return prev1;   // O(1) space
+```
+
+### 2D DP/Knapsack · DP on Strings
 _(to be added)_
 
 ## Bit Manipulation & Math

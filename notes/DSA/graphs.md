@@ -7,7 +7,7 @@ topics: [BFS & DFS, Shortest Path, Union-Find & MST, Topological Sort]
 difficulty: hard
 frequency: high
 created: 2026-08-20
-updated: 2026-08-20
+updated: 2026-09-07
 reviewed: 2026-08-09
 source: lecture notes
 related: [linkedlist-stack-queue, heaps-and-greedy, trees-and-bst, recursion-and-backtracking]
@@ -21,21 +21,148 @@ status: partial
 > sort), and minimum-cost connection (MST). Most "connect / reach / order / group"
 > problems reduce to one of these.
 
-**Topics:** BFS & DFS · Shortest Path · [Union-Find & MST](#union-find--minimum-spanning-tree) · Topological Sort
+**Topics:** [BFS & DFS](#bfs--dfs) · Shortest Path · [Union-Find & MST](#union-find--minimum-spanning-tree) · Topological Sort
 
 ---
 
 ## BFS & DFS
 
-_Not yet written._ (Adjacency list vs matrix; BFS = Queue for shortest hops; DFS =
-recursion/Stack for connectivity, cycle detection, components; grid variants.)
+> BFS explores level by level via a `Queue`; DFS explores depth-first via a
+> `Stack`/recursion. On an **unweighted** grid or graph, BFS's level-by-level
+> order guarantees the *first* time you reach a target is via the *shortest*
+> path — that guarantee is exactly why grid shortest-path problems reach for
+> BFS, not DFS/backtracking.
+
+### Core Concept
+
+- **DFS/backtracking** = explore paths (all of them, or until one is proven
+  invalid) — see [Recursion & Backtracking](recursion-and-backtracking.md).
+- **BFS** = shortest path in an unweighted graph/grid — every edge/move costs
+  the same (1), so the number of levels expanded equals distance travelled.
+- Adjacency list vs matrix: list for sparse graphs (most interview problems),
+  matrix for dense graphs or when O(1) edge-existence lookup matters.
+
+### Details / Walkthrough — Binary Maze (shortest path in a 0/1 grid)
+
+> Given a grid of `0`s and `1`s, find the shortest path (in number of moves)
+> from a source cell to a destination cell, moving through cells with value
+> `1` only, in 4 directions.
+
+**Recognize the pattern:** grid + shortest path + every move costs 1 → BFS,
+not DFS/backtracking.
+
+```java
+int shortestPath(List<List<Integer>> grid, int srcR, int srcC, int dstR, int dstC) {
+    int rows = grid.size(), cols = grid.get(0).size();
+    boolean[][] visited = new boolean[rows][cols];
+    int[][] dir = {{-1,0},{1,0},{0,-1},{0,1}};   // up, down, left, right
+
+    Queue<int[]> q = new LinkedList<>();          // {row, col, dist}
+    q.add(new int[]{srcR, srcC, 0});
+    visited[srcR][srcC] = true;
+
+    while (!q.isEmpty()) {
+        int[] curr = q.poll();
+        int r = curr[0], c = curr[1], dist = curr[2];
+        if (r == dstR && c == dstC) return dist;
+
+        for (int[] d : dir) {
+            int nr = r + d[0], nc = c + d[1];
+            boolean inGrid = nr >= 0 && nr < rows && nc >= 0 && nc < cols;
+            if (inGrid && grid.get(nr).get(nc) == 1 && !visited[nr][nc]) {
+                visited[nr][nc] = true;           // mark visited on enqueue, not dequeue
+                q.add(new int[]{nr, nc, dist + 1});
+            }
+        }
+    }
+    return -1;   // destination unreachable
+}
+```
+
+**Mental skeleton** (write this before any helper function):
+
+```
+queue = {source, dist=0}; visited[source] = true
+while queue not empty:
+    take one cell
+    if destination: return dist
+    for each of 4 directions:
+        compute neighbour
+        if in-bounds AND cell==1 AND not visited:
+            mark visited
+            enqueue neighbour with dist+1
+return -1
+```
+
+**Why marking visited on *enqueue* (not dequeue) matters:** the queue can
+hold multiple pending references to the same cell before it's processed if
+you defer the check — marking at enqueue time guarantees each cell is queued
+exactly once, keeping the algorithm O(rows·cols) instead of blowing up with
+duplicate entries.
+
+### Examples
+
+3×3 grid `[[1,0,0],[1,1,0],[0,1,1]]`, source `(0,0)`, destination `(2,2)`:
+BFS expands `(0,0)` → `(1,0)` → `(1,1)` → `(2,1)` → `(2,2)`, so the first time
+`(2,2)` is dequeued, `dist = 4` — guaranteed shortest because BFS exhausts
+every distance-`k` cell before touching any distance-`(k+1)` cell.
+
+### Common Mistakes / Edge Cases
+
+1. **Using DFS/recursion for "shortest path"** — DFS finds *a* path, not
+   necessarily the *shortest* one, without extra bookkeeping; BFS gets the
+   shortest path for free from its level-order exploration.
+2. **Marking visited on dequeue instead of enqueue** — lets the same cell be
+   added to the queue multiple times before it's first processed, wasting
+   work (and in the worst case still gives the right answer but far slower).
+3. **`int` passed by value to a helper doesn't mutate the caller's copy** —
+   if you refactor into `helper(..., int dist)`, changing `dist` inside the
+   helper never changes the caller's variable; the distance has to travel via
+   the queue's per-cell state (`int[]{r, c, dist}`) or a return value, not a
+   mutated parameter.
+4. **Forgetting the in-bounds check before indexing the grid** — checking
+   `grid.get(nr).get(nc) == 1` before `nr/nc` are validated throws an
+   index-out-of-bounds exception; always short-circuit bounds first (Java's
+   `&&` short-circuits left-to-right, so order the condition as shown above).
+5. **Source == destination** — return `0` immediately; the BFS loop handles
+   this correctly since the check happens right after dequeuing, before
+   trying any neighbours, but it's worth stating out loud as an edge case.
+
+### Interview Angle
+
+**How interviewers test this:**
+- Direct: "shortest path in a binary matrix" (LC 1091-style), "rotting
+  oranges" (multi-source BFS), "word ladder" (BFS over a word graph).
+- Follow-up: "what if some cells cost more to enter than others?" → no longer
+  plain BFS — needs Dijkstra (see Shortest Path below).
+- Follow-up: "multiple sources at once?" → seed the queue with *all* sources
+  at `dist=0` before starting the loop — the BFS mechanics don't change.
+
+**Coding habit worth stating out loud:** don't create a `helper()` just
+because you see a loop — for BFS, the `while(queue...)` loop usually *is* the
+whole algorithm; a helper is more natural for DFS/recursion, where the
+function itself represents "solve from this state" (`helper(row, col, ...)`).
+Decide "am I repeating the same logic?" or "does this deserve its own single
+responsibility?" before extracting one — don't design the functions before
+the algorithm.
+
+**Pattern Recognition — Keywords → Approach**
+
+| Constraint / Keyword in Problem | Think of This Pattern |
+|---|---|
+| "shortest path", "fewest steps/moves", "minimum distance" + unweighted | BFS with a `Queue<int[]>` of `{row, col, dist}` |
+| "grid of 0s/1s, 4-directional movement" | `dir[][] = {{-1,0},{1,0},{0,-1},{0,1}}` loop over neighbours |
+| "explore all paths", "generate every path" | DFS/backtracking instead — see [Recursion & Backtracking](recursion-and-backtracking.md) |
+| "multiple starting points" | Multi-source BFS: seed all sources into the queue at dist 0 |
+| "edges have different costs/weights" | Not plain BFS — Dijkstra (below) |
 
 ---
 
 ## Shortest Path
 
-_Not yet written._ (Unweighted → BFS; weighted non-negative → Dijkstra (PQ);
-negative edges → Bellman-Ford; all-pairs → Floyd-Warshall.)
+_Not yet written._ (Weighted non-negative → Dijkstra (PQ); negative edges →
+Bellman-Ford; all-pairs → Floyd-Warshall. The **unweighted** case — plain
+BFS on a grid/graph — is covered above under [BFS & DFS](#bfs--dfs).)
 
 ---
 
